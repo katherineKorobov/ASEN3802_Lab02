@@ -16,11 +16,10 @@ end
 
 %% Find Steady State Parameters
 
-x = linspace(1.375, )
 
 for i = 1:length(material)
     material(i).t0 = findT0(material(i).data);
-    material(i).Hexp = calculateHexp(material(i).data, material(i).t0);
+    material(i).Hexp = calculateHexp(material(i).data);
 end
 
 
