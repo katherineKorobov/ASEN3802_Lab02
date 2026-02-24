@@ -1,15 +1,13 @@
 function Hexp = calculateHexp(data_set)
 
     % Extract the last row where time is not NaN (this is at steady state)
-    lastRow = data_set(~isnan(data_set(:, 1)), end);
-    
-    % Calculate the slope, Hexp, by taking two thermocouple points and two
-    % x
-    
-    % x1 is at 3in away
-    point1 = [3, lastRow(2)]; % [in, ]
-    point2 = [6.5, lastRow(9)]; % [in, ]
+    last_idx = find(~isnan(data_set(:, 1)), 1, "last");
+    lastRow = data_set(last_idx, :);
+   
+    x = linspace(0.0762, 0.1651, 8);
+    thermal_vals = lastRow(2:end);
 
-
-    Hexp = (point2(2) - point1(2)) / (point1(2) - point1(1));
+    p = polyfit(x, thermal_vals, 1);
+    Hexp = p(1);
+    
 end
