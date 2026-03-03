@@ -14,16 +14,27 @@ for i = 1:length(files)
                          "t0", 0,"Hexp", 0,"Han", 0 );
 end
 
-%% Find Steady State Parameters
+material_names = ["Aluminum - 25V", "Aluminum - 30V", ...
+             "Brass - 25V", "Brass - 30V", "Stainless Steel - 22V"];
+x = linspace(0.0762, 0.1651, 8);
 
+voltage = [25,30,25,30,22]; % [V]
+current = [240,290,237,285,203]*10^-3; % [A]
+k = [130, 130, 115, 115, 16.2]; % [W/(mC)]
+
+%% Find Steady State Parameters
 
 for i = 1:length(material)
     material(i).t0 = findT0(material(i).data);
     material(i).Hexp = calculateHexp(material(i).data);
+    material(i).Han = analytical_temp_slope(V(i), I(i), k(i), D(i)); % [C/m]
 end
 
 
+figure();
+% Plot experimental and for actual
+for i = 1:length(material)
+    plotSteadyState(material_names(i), x, material(i), i)
 
-
-
+end
 
