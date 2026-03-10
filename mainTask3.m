@@ -76,6 +76,8 @@ L = 0.149225;
 
 T0Vals = zeros(length(material));
 
+HVals = zeros(length(material));
+
 if plotTransientModel_1B
 
     for i = 1:length(material)
@@ -86,6 +88,8 @@ if plotTransientModel_1B
     T0 = material(i).t0;
 
 T0Vals(i) = T0;
+
+HVals(i) = H;
 
      alpha = alphaVal(i);
         
