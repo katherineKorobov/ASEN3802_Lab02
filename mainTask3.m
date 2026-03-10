@@ -74,16 +74,20 @@ alphaVal = k ./ (rhoVal .* cpVal);
 
 L = 0.149225;   
 
+T0Vals = zeros(length(material));
 
 if plotTransientModel_1B
+
     for i = 1:length(material)
         
-        % getting the variables
-        H = material(i).Hexp;
+     % getting the variables
+    H = material(i).Hexp;
 
-        T0 = material(i).t0;
+    T0 = material(i).t0;
 
-        alpha = alphaVal(i);
+T0Vals(i) = T0;
+
+     alpha = alphaVal(i);
         
       %1B func
         u_IB = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
@@ -99,6 +103,6 @@ if plotTransientModel_1B
         xlabel('Time (sec)'); ylabel('Temperature (C)');
         grid on;
 
-        legend('Transient Temp Solution', 'Experimental Data', Location='northwest');
+        legend('Transient Temp Solution', 'Experimental Data', Location='southeast');
     end
 end
