@@ -73,4 +73,32 @@ if plotTransientModel_1A
 
 end
 
+if plotTransientModel_1B
+    model_name = "Model 1B";
+    for i = 1:length(material)
+        
+        % getting the variables
+        H = material(i).Hexp;
+
+        T0 = material(i).t0;
+
+        alpha = material(i).alpha;
+        
+      %1B func
+        u_IB = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
+
+        %plotting
+
+        figure();
+        hold on;
+
+        plotTransientTemperatureSolution(x, u_IB, material(i).data, material_names(i), model_name);
+        
+        title(['Model 1B for ', material_names(i)]);
+        %xlabel('Time (sec)'); ylabel('Temperature (C)');
+        %grid on;
+
+        %legend('Transient Temp Solution', 'Experimental Data', Location='southwest');
+    end
+end
 
