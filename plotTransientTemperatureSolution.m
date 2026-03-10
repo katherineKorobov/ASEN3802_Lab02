@@ -1,8 +1,7 @@
-function plotTransientTemperatureSolution(material_name, x, u, material_data)
+function plotTransientTemperatureSolution(x, u, material_data, material_name, model_name)
     t_max = max(material_data(:,1));
     t = linspace(0, t_max, t_max); % [s]
     
-    hold on;
 
      for i = 1:length(x)      
          T_analytical = zeros(size(t));
@@ -12,9 +11,14 @@ function plotTransientTemperatureSolution(material_name, x, u, material_data)
 
         end
 
-        plot(t, T_analytical, 'b-'); % Plot analytical data
-        plot(material_data(:, 1), material_data(:, (i+1)), 'r-'); % Plotting experimental data
+        plot(t, T_analytical, 'b-', 'LineWidth', 1.5); % Plot analytical data
+        plot(material_data(:, 1), material_data(:, (i+1)), 'r-', 'LineWidth', 1.5); % Plotting experimental data
+        title(model_name + " for " + material_name);
+        grid on;
 
      end
+     legend("Analytical Transient Solution","Experimental Transient Behavior", "Location",'southeast');
+     xlabel("Times [s]");
+     ylabel('Temperature [{\circ}C]')
   
 end

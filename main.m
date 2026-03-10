@@ -11,12 +11,15 @@ files = { ...
 voltage = [25,30,25,30,22]; % [V]
 current = [240,290,237,285,203]*10^-3; % [A]
 k = [130, 130, 115, 115, 16.2]; % [W/(mC)]
+density = [2810, 2810, 8500, 8500, 8000];
+c_p = [960, 960, 380, 380, 500];
+
 
 % Create structs to hold data
 for i = 1:length(files)
     material(i) = struct("data", readmatrix("data\" + files{i}), ...
                          "Voltage", voltage(i), "Current", current(i), ...
-                         "k", k(i),"t0", 0,"Hexp", 0,"Han", 0 );
+                         "k", k(i), "alpha", k(i)/(density(i)*c_p(i)) ,"t0", 0,"Hexp", 0,"Han", 0 );
 end
 
 material_names = ["Aluminum - 25V", "Aluminum - 30V", ...
@@ -44,25 +47,30 @@ if plotSteadyState
     end
 end
 
-if plotTransientModel_1A
+n = linspace(1,10, 10);
+L = 0.149225; % [m] 5.875 in
+lambda = ((2 .* n -1)*pi) ./ (2*L);
 
+if plotTransientModel_1A
+    
+    model_name = "Model 1A";
     for i = 1:length(material)
         
         figure();
         hold on;
 
-        Han = material(i).Han;
+        H_an = material(i).Han;
         T_0 = material(i).t0;
-
-        u1_analytical = @(x,t) Han*x + T_0;
-
-        plotTransientTemperatureSolution(material_names(i), x, u1_analytical, material(i).data);
+        alpha = material(i).alpha;
+        b_n = ((8*H_an*L) ./ ((2 .* n - 1).^2 .* pi^2)) .* (-1).^n; 
+   
+        u1_analytical = @(x,t) T_0 + H_an*x + sum(b_n .* sin(lambda .* x) .* exp(-(lambda.^2) .* alpha .* t));
+        
+        plotTransientTemperatureSolution(x, u1_analytical, material(i).data, material_names(i), model_name);
         hold off;
 
-        title(['Model 1A for ', material_names(i)]);
-        grid on;
-
     end
+
 end
 
 
