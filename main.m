@@ -24,7 +24,7 @@ end
 
 material_names = ["Aluminum - 25V", "Aluminum - 30V", ...
              "Brass - 25V", "Brass - 30V", "Stainless Steel - 22V"];
-x = linspace(0.0762, 0.1651, 8);
+x = linspace(11/8, 11/8 + 0.5*8, 8) * 0.0254; % [m]
 D = ones(1,5)*0.0254; % [m]
 
 %% Find Steady State Parameters
@@ -38,7 +38,7 @@ end
 plotSteadyState = 0;
 plotTransientModel_1A = 1;
 plotTransientModel_1B = 1;
-plotTransientModel_2 = 1;
+plotTransientModel_2 = 0;
 
 if plotSteadyState
     figure();
@@ -47,7 +47,7 @@ if plotSteadyState
     end
 end
 
-n = linspace(1,10, 10);
+n = 1:10;
 L = 0.149225; % [m] 5.875 in
 lambda = ((2 .* n -1)*pi) ./ (2*L);
 
@@ -62,16 +62,17 @@ if plotTransientModel_1A
         H_an = material(i).Han;
         T_0 = material(i).t0;
         alpha = material(i).alpha;
+
         b_n = ((8*H_an*L) ./ ((2 .* n - 1).^2 .* pi^2)) .* (-1).^n; 
    
         u1_analytical = @(x,t) T_0 + H_an*x + sum(b_n .* sin(lambda .* x) .* exp(-(lambda.^2) .* alpha .* t));
-        
+
         plotTransientTemperatureSolution(x, u1_analytical, material(i).data, material_names(i), model_name);
         hold off;
-
+    
     end
-
 end
+
 
 if plotTransientModel_1B
     model_name = "Model 1B";
@@ -93,12 +94,7 @@ if plotTransientModel_1B
         hold on;
 
         plotTransientTemperatureSolution(x, u_IB, material(i).data, material_names(i), model_name);
+        hold off;
         
-        title(['Model 1B for ', material_names(i)]);
-        %xlabel('Time (sec)'); ylabel('Temperature (C)');
-        %grid on;
-
-        %legend('Transient Temp Solution', 'Experimental Data', Location='southwest');
     end
 end
-
