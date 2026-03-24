@@ -76,6 +76,8 @@ alphaVal = alphaVal * 0.5;
 
 L = 0.149225;   
 
+RMS = zeros(5,1);
+
 T0Vals = zeros(length(material));
 
 HVals = zeros(length(material));
@@ -98,6 +100,25 @@ HVals(i) = H;
       %1B func
         u_IB = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
 
+        % Calculate RMS value for the transient model
+%pulling u_IB vals to compare
+t = material(i).data(:, 1); 
+temp = material(i).data(:, 2:9); 
+
+u_mod = zeros(size(temp));
+
+for k = 1:length(t)
+    
+
+    for h = 1:length(x)
+
+         u_mod(k, h) = u_IB(x(h), t(k));
+    end
+end
+
+%using couple 4 for center
+RMS(i) = rms(u_mod(4) - temp(4));
+
         %plotting
 
         figure();
@@ -105,7 +126,7 @@ HVals(i) = H;
 
         plotTransientTemperatureSolution(material_names(i), x, u_IB, material(i).data);
         
-        title(['Model 1B for ', material_names(i)]);
+        title(['Model III for ', material_names(i)]);
         xlabel('Time (sec)'); ylabel('Temperature (C)');
         grid on;
 
