@@ -72,8 +72,13 @@ cpVal = [960 , 960 , 380 , 380 , 500];
 
 alphaVal = k ./ (rhoVal .* cpVal);
 
-alphaVal = alphaVal * 0.5; 
-
+%alphaVal = alphaVal * 0.5; 
+alphaVal(1) = alphaVal(1) * 0.5;
+alphaVal(2) = alphaVal(2) * 0.5;
+alphaVal(3) = alphaVal(3) * 0.45;
+alphaVal(4) = alphaVal(4) * 0.4;
+alphaVal(5) = alphaVal(5) * 0.7;
+%
 L = 0.149225;   
 
 RMS = zeros(5,1);
