@@ -18,11 +18,11 @@ M = [3.09, 1.69, 6.468, 6.65, 19.78];
 
 % Create structs to hold data
 for i = 1:length(files)
-    data_dirty = readmatrix("data\" + files{i});
+    dirty_data = readmatrix("data\" + files{i});
     
-    last_idx = find(~isnan(data_dirty(:, 1)), 1, "last");
-    lastRow = data_dirty(last_idx, :);
-    data_cleaned = data_dirty(1:last_idx, :);
+    last_idx = find(~isnan(dirty_data(:, 1)), 1, "last");
+    lastRow = dirty_data(last_idx, :);
+    data_cleaned = dirty_data(1:last_idx, :);
 
     material(i) = struct("data", data_cleaned, ...
                          "Voltage", voltage(i), "Current", current(i), ...
@@ -31,7 +31,7 @@ end
 
 material_names = ["Aluminum - 25V", "Aluminum - 30V", ...
              "Brass - 25V", "Brass - 30V", "Stainless Steel - 22V"];
-x = linspace(11/8, 11/8 + 0.5*8, 8) * 0.0254; % [m]
+x = linspace(11/8, 11/8 + 0.5*7, 8) * 0.0254; % [m]
 D = ones(1,5)*0.0254; % [m]
 
 %% Find Steady State Parameters
@@ -46,7 +46,7 @@ plotSteadyState_1 = 0;
 plotTransientModel_1A = 0;
 plotTransientModel_1B = 0;
 plotTransientModel_2 = 0;
-plotTransientModel_3 = 0;
+plotTransientModel_3 = 1;
 
 if plotSteadyState_1
     figure();
@@ -147,9 +147,12 @@ if plotTransientModel_3
         hold on;
 
         plotTransientTemperatureSolution(x, u_3, material(i).data, material_names(i), model_name);
+        
         hold off;
-
-        [t_ss(i), fourier_num(i)] = findSteadyStateTime(x, u_3, material(i).data, material(i).alpha);
+        
+        % Find steady state time and fourier number for model 3
+        thermocouple_number = 8;
+        [t_ss(i), fourier_num(i)] = findSteadyStateTime(x, u_3, material(i).data, material(i).alpha, thermocouple_number);
     
     end
 end
