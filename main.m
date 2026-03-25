@@ -18,7 +18,13 @@ M = [3.09, 1.69, 6.468, 6.65, 19.78];
 
 % Create structs to hold data
 for i = 1:length(files)
-    material(i) = struct("data", readmatrix("data\" + files{i}), ...
+    data_dirty = readmatrix("data\" + files{i});
+    
+    last_idx = find(~isnan(data_dirty(:, 1)), 1, "last");
+    lastRow = data_dirty(last_idx, :);
+    data_cleaned = data_dirty(1:last_idx, :);
+
+    material(i) = struct("data", data_cleaned, ...
                          "Voltage", voltage(i), "Current", current(i), ...
                          "k", k(i), "alpha", k(i)/(density(i)*c_p(i)) ,"t0", 0,"Hexp", 0,"Han", 0, "M", M(i));
 end
@@ -36,16 +42,16 @@ for i = 1:length(material)
 end
 
 %% Plotting 
-plotSteadyState = 0;
+plotSteadyState_1 = 0;
 plotTransientModel_1A = 0;
 plotTransientModel_1B = 0;
 plotTransientModel_2 = 0;
-plotAllModels = 1;
+plotTransientModel_3 = 0;
 
-if plotSteadyState
+if plotSteadyState_1
     figure();
     for i = 1:length(material)
-        plotSteadyState(material_names(i), x, material(i), i) % Plot experimental and actual
+        plotSteadyState(material_names(i), x, material(i), i); % Plot experimental and actual
     end
 end
 
@@ -75,7 +81,6 @@ if plotTransientModel_1A
     end
 end
 
-
 if plotTransientModel_1B
     model_name = "Model 1B";
     for i = 1:length(material)
@@ -88,14 +93,14 @@ if plotTransientModel_1B
         alpha = material(i).alpha;
         
       %1B func
-        u_IB = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
+        u_1B = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
 
         %plotting
 
         figure();
         hold on;
 
-        plotTransientTemperatureSolution(x, u_IB, material(i).data, material_names(i), model_name);
+        plotTransientTemperatureSolution(x, u_1B, material(i).data, material_names(i), model_name);
         hold off;
         
     end
@@ -125,14 +130,26 @@ if plotTransientModel_2
     end
 end
 
-
-%% Task 3
-
-if plotAllModels
-    
-    for i = length(materials)
+if plotTransientModel_3
+    model_name = "Model III";
+    for i = 1:length(material)
         
+        % getting the variables
+        adj_alpha = 0.5 * material(i).alpha;
+        H = material(i).Hexp;
+        T0 = material(i).t0;
+        
+        %1B func
+        u_3 = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*adj_alpha*t_val), 1:10));
 
+        %plotting
+        figure();
+        hold on;
+
+        plotTransientTemperatureSolution(x, u_3, material(i).data, material_names(i), model_name);
+        hold off;
+
+        [t_ss(i), fourier_num(i)] = findSteadyStateTime(x, u_3, material(i).data, material(i).alpha);
+    
     end
-
 end
