@@ -1,4 +1,4 @@
-function plotAllModels(x, u, material_data, material_name, model_name)
+function plotAllModels(x, u, material_data, material_name, model_name, i)
     t = material_data(:,1); % [s]
     T_analytical = zeros(size(t));
 

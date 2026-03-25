@@ -136,7 +136,18 @@ end
 rhoVal = [2810 , 2810 , 8500 , 8500 , 8000]; 
 cpVal = [960 , 960 , 380 , 380 , 500]; 
 alphaVal = k ./ (rhoVal .* cpVal);
-alphaVal = alphaVal * 0.5; 
+
+%alphaVal = alphaVal * 0.5; 
+alphaVal(1) = alphaVal(1) * 0.5;
+alphaVal(2) = alphaVal(2) * 0.5;
+alphaVal(3) = alphaVal(3) * 0.45;
+alphaVal(4) = alphaVal(4) * 0.4;
+alphaVal(5) = alphaVal(5) * 0.7;
+
+RMS = zeros(5,1);
+
+T0Vals = zeros(length(material));
+HVals = zeros(length(material));
 
 if plotTransientModel_3
     model_name = "Model III";
@@ -149,18 +160,30 @@ if plotTransientModel_3
     HVals(i) = H;
     alpha = alphaVal(i);
         
-      % III Func
-        u_III = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
+    % III Func
+    u_III = @(x_val, t_val) T0 + H*x_val + sum(arrayfun(@(n) ((-2*H*sin(((2*n-1)*pi/2))) / (L*((2*n-1)*pi/(2*L))^2)) * sin(((2*n-1)*pi/(2*L))*x_val) * exp(-(((2*n-1)*pi/(2*L))^2)*alpha*t_val), 1:10));
+    
+    % Calculate RMS Value for Transient Model
+    
+    % Pulling u_IB vals to compare
+    t = material(i).data(:, 1); 
+    temp = material(i).data(:, 2:9); 
+    u_mod = zeros(size(temp));
+    
+    for k = 1:length(t)
+        for h = 1:length(x)
+             u_mod(k, h) = u_IB(x(h), t(k));
+        end
+    end
 
-      % Plotting
-        figure(i);
-        hold on;
-       
-        plotAllModels(x, u_III, material(i).data, material_names(i), model_name);
-        hold off;
+    % Using Couple 4 for Center
+    RMS(i) = rms(u_mod(4) - temp(4));
+
+    % Plotting
+    figure(i);
+    hold on;
+    
+    plotAllModels(x, u_III, material(i).data, material_names(i), model_name);
+    hold off;
     end
 end
-
-
-
-
