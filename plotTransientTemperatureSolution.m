@@ -2,7 +2,6 @@ function plotTransientTemperatureSolution(x, u, material_data, material_name, mo
     t_max = max(material_data(:,1));
     t = linspace(0, t_max, 100); % [s]
     
-
      for i = 1:length(x)      
          T_analytical = zeros(size(t));
 
