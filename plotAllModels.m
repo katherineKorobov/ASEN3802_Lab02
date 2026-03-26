@@ -1,4 +1,4 @@
-function plotAllModels(x, u, material_data, material_name, model_name, i)
+function plotAllModels(x, u, material_data, material_name, model_name)
     t = material_data(:,1); % [s]
     T_analytical = zeros(size(t));
 
@@ -11,12 +11,14 @@ function plotAllModels(x, u, material_data, material_name, model_name, i)
     
     % Experimental Temperature
     if model_name == "Model III"
-        plot(t, material_data(:, 9), 'r-', 'LineWidth', 1.5); % Plotting experimental data
+        scatter(t, material_data(:, 9), "red", "filled", "SizeData", 2); % Plotting experimental data
+        plot(t, material_data(:,9)+2, "k--", "LineWidth", 1.75);
+        plot(t, material_data(:,9)-2, "k--", "LineWidth", 1.75);
         
-        % Shaded Error Region
-        p = patch([t; flip(t)], [material_data(:,9)+2; flip(material_data(:,9)-2)], [0.5, 0.5, 0.5]);
-        p.FaceAlpha = 0.2; % transparency
-        p.EdgeColor = [0.5, 0.5, 0.5]; % grey border
+        % % Shaded Error Region
+        % p = patch([t; flip(t)], [material_data(:,9)+2; flip(material_data(:,9)-2)], [0.5, 0.5, 0.5]);
+        % p.FaceAlpha = 0.2; % transparency
+        % p.EdgeColor = [0.5, 0.5, 0.5]; % grey border
     end
     title(material_name + "'s Model Comparison at 8th Thermo-Couple");
     grid on;
